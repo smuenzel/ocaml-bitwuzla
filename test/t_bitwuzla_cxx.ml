@@ -35,6 +35,7 @@ let with_t_naked f =
   let t = Solver.create options in
   let r = f t in
   Solver.unsafe_delete t;
+  Gc.full_major ();
   r
 
 let with_t f =
@@ -215,6 +216,10 @@ let%expect_test "copyright" =
       SymFPU
       https://github.com/martin-cs/symfpu |}]
 
+let%expect_test "mk_array_sort" =
+  Sort.pp Format.std_formatter ar32_8_sort;
+  [%expect {| (Array (_ BitVec 32) (_ BitVec 8)) |}]
+
 let%test "Options (bool)" =
   let t = Options.default () in
   let d = Options.default_value Produce_models in
@@ -249,10 +254,6 @@ let%test "Options (mode)" =
   Options.set t Sat_solver s;
   let n = Options.get t Sat_solver in
   r && d <> n && s = n
-
-let%expect_test "mk_array_sort" =
-  Sort.pp Format.std_formatter ar32_8_sort;
-  [%expect {| (Array (_ BitVec 32) (_ BitVec 8)) |}]
 
 let%expect_test "mk_bool_sort" =
   Sort.pp Format.std_formatter bool_sort;

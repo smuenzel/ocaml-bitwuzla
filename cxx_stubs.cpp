@@ -10,6 +10,7 @@
 /**************************************************************************/
 
 #include <string.h>
+#include <cassert>
 
 #include <caml/mlvalues.h>
 #include <caml/alloc.h>
@@ -194,7 +195,8 @@ ocaml_bitwuzla_options_get_mode (mlvalue vt, mlvalue vk)
 class Sort : public bitwuzla::Sort
 {
 public:
-  Sort(bitwuzla::Sort t) : bitwuzla::Sort(t) {}
+  bool is_deleted;
+  Sort(bitwuzla::Sort t) : bitwuzla::Sort(t), is_deleted(false) {}
   ~Sort() {}
   void * operator new (size_t size,
 		       struct custom_operations * operations,
@@ -203,13 +205,14 @@ public:
     *custom = caml_alloc_custom(operations, size, 0, 1);
     return Data_custom_val(*custom);
   }
-  void operator delete (void *ptr) {}
+  void operator delete (void *ptr) { ((Sort*)ptr)->is_deleted = true;}
 };
 
 #define Sort_val(v) ((Sort*)Data_custom_val(v))
 
 static void sort_delete (mlvalue vt)
 {
+  assert (!Sort_val(vt)->is_deleted);
   delete Sort_val(vt);
 }
 extern "C" CAMLprim int native_bitwuzla_sort_compare (mlvalue v1, mlvalue v2)
