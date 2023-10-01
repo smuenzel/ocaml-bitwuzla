@@ -514,6 +514,8 @@ let%expect_test "mk_fp_neg_zero" =
   Term.pp Format.std_formatter (mk_fp_neg_zero fp16_sort);
   [%expect {| (fp #b1 #b00000 #b0000000000) |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "mk_fp_pos_inf" =
   Term.pp Format.std_formatter (mk_fp_pos_inf fp16_sort);
   [%expect {| (fp #b0 #b11111 #b0000000000) |}]
@@ -571,6 +573,8 @@ let%expect_test "mk_const" =
   [%expect {| a |}]
 
 let%test "mk_const" = Term.is_const (mk_const bv8_sort)
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "mk_const_array" =
   Term.pp Format.std_formatter (mk_const_array ar32_8_sort @@ mk_bv_one bv8_sort);
@@ -651,11 +655,18 @@ let%expect_test "Term.get" =
   [%expect {|
        b |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%test "Term.get" =
+  Gc.full_major ();
   try
     ignore @@ Term.get term3 3;
     false
-  with Invalid_argument _ -> true
+  with Invalid_argument _ ->
+  Gc.full_major ();
+  true
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "Term.num_indices" = Term.num_indices term1 = 0
 
@@ -667,9 +678,13 @@ let%test "Term.num_indices" = Term.num_indices term3 = 0
 
 let%test "Term.num_indices" = Term.num_indices term1_indexed2 = 2
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "Term.indices" =
   (pp_array pp_print_int) Format.std_formatter (Term.indices term1_indexed2);
   [%expect {| 1 0 |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "Term.sort" =
   with_terms (fun t ->
@@ -683,15 +698,21 @@ let%expect_test "Term.sort" =
        Bool Bool -> Bool (_ BitVec 8) (_ BitVec 8)
        (Array (_ BitVec 32) (_ BitVec 8)) (_ BitVec 2) RoundingMode |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "Term.symbol" =
   print_string (Term.symbol bv_const_a);
   [%expect {| a |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "Term.symbol" =
   try
     ignore @@ Term.symbol (mk_bv_zero bv8_sort);
     false
   with Not_found -> true
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "Term.is_const" =
   with_terms (fun t -> print_predicate (Term.is_const t));
@@ -725,6 +746,8 @@ let%test "Term.is_bv_value_min_signed" =
 
 let%test "Term.is_bv_value_max_signed" =
   not @@ Term.is_bv_value_max_signed bv_var
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "Term.is_bv_value_max_signed" =
   Term.is_bv_value_max_signed @@ mk_bv_max_signed bv8_sort
@@ -768,6 +791,8 @@ let%test "push/pop" =
       Solver.pop t 3;
       Solver.check_sat t = Sat)
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "pp_formula" =
   with_hard_formula (fun t -> Solver.pp_formula Format.std_formatter t);
   [%expect
@@ -782,25 +807,35 @@ let%expect_test "pp_formula" =
        (exit) |}]
 
 let%expect_test "simplify" =
+  Gc.full_major ();
   with_sat_formula (fun (t, _) ->
       ignore (Solver.simplify t);
       Solver.pp_formula Format.std_formatter t);
+  Gc.full_major ();
   [%expect {|
     (set-logic ALL)
     (check-sat)
     (exit) |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "get_value" =
+  Gc.full_major ();
   Term.pp Format.std_formatter
     (with_sat_formula (fun (t, a) ->
          ignore @@ Solver.check_sat t;
          Solver.get_value t a));
+  Gc.full_major ();
   [%expect {| true |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "get_bool_value" =
   with_sat_formula (fun (t, a) ->
       ignore @@ Solver.check_sat t;
       Term.value Bool (Solver.get_value t a))
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "get_bv_value" =
   print_string
@@ -813,6 +848,8 @@ let%expect_test "get_bv_value" =
          Term.value (String { base = 2 }) (Solver.get_value t a)));
   [%expect {| 00101010 |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "get_bv_value" =
   Z.print
     (with_t_naked (fun t ->
@@ -824,6 +861,8 @@ let%expect_test "get_bv_value" =
          Term.value Z (Solver.get_value t a)));
   [%expect {| 42 |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "get_bv_value" =
   Z.print
     (with_t_naked (fun t ->
@@ -834,6 +873,8 @@ let%expect_test "get_bv_value" =
          ignore @@ Solver.check_sat t;
          Term.value Z (Solver.get_value t a)));
   [%expect {| 9223372036854775807 |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "get_bv_value" =
   Z.print
@@ -871,6 +912,8 @@ let%expect_test "get_rm_value" =
          ignore @@ Solver.check_sat t;
          RoundingMode.to_string (Term.value RoundingMode (Solver.get_value t a))));
   [%expect {| RTZ |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "is_unsat_assumption" =
   (with_unsat_formula false) (fun (t, e) ->
@@ -943,3 +986,5 @@ let%expect_test "Term.to_string" =
     #b00101010
     (_ bv42 8)
     #x2a |}]
+
+let () = eprintf "line %i\n" __LINE__

@@ -580,7 +580,8 @@ ocaml_bitwuzla_mk_uninterpreted_sort (mlvalue vopt)
 class Term : public bitwuzla::Term
 {
 public:
-  Term(bitwuzla::Term t) : bitwuzla::Term(t) {}
+  bool is_deleted;
+  Term(bitwuzla::Term t) : bitwuzla::Term(t), is_deleted(false) {}
   ~Term() {}
   void * operator new (size_t size,
 		       struct custom_operations * operations,
@@ -590,7 +591,7 @@ public:
     fprintf(stderr, "%s=%p\n",__PRETTY_FUNCTION__, custom);
     return Data_custom_val(*custom);
   }
-  void operator delete (void *ptr) {}
+  void operator delete (void *ptr) { ((Term*)ptr)->is_deleted = true;}
 };
 #undef value
 
@@ -599,6 +600,8 @@ public:
 static void term_delete (mlvalue vt)
 {
   fprintf(stderr, "%s=%p\n",__PRETTY_FUNCTION__, vt);
+  fprintf(stderr, "term_delete, is_deleted=%i\n", Term_val(vt)->is_deleted);
+  assert (!Term_val(vt)->is_deleted);
   delete Term_val(vt);
 }
 extern "C" CAMLprim int native_bitwuzla_term_compare (mlvalue v1, mlvalue v2)
