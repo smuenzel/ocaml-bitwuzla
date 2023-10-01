@@ -16,11 +16,14 @@
 open Bitwuzla_cxx
 open Format
 
+let () = eprintf "line %i\n" __LINE__
+
 let print_predicate b = print_int (Bool.to_int b)
 
 let timeout t () = Float.compare (Sys.time ()) t > 0
 
 let pp_array pp f a =
+  Gc.full_major ();
   Array.iter
     (fun t ->
       pp f t;
@@ -28,6 +31,7 @@ let pp_array pp f a =
     a
 
 let with_t_naked f =
+  Gc.full_major ();
   let options = Options.default () in
   Options.set options Produce_models true;
   Options.set options Produce_unsat_assumptions true;
@@ -216,18 +220,35 @@ let%expect_test "copyright" =
       SymFPU
       https://github.com/martin-cs/symfpu |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "mk_array_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter ar32_8_sort;
   [%expect {| (Array (_ BitVec 32) (_ BitVec 8)) |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%test "Options (bool)" =
+  Gc.full_major ();
   let t = Options.default () in
+  Gc.full_major ();
   let d = Options.default_value Produce_models in
+  Gc.full_major ();
   let r = d = Options.get t Produce_models in
+  Gc.full_major ();
   Options.set t Produce_models (not d);
-  r && d <> Options.get t Produce_models
+  Gc.full_major ();
+  let result =
+    r && d <> Options.get t Produce_models
+  in
+  Gc.full_major ();
+  result
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "Options (numeric)" =
+  Gc.full_major ();
   let t = Options.default () in
   let d = Options.default_value Log_level in
   let r = d = Options.get t Log_level in
@@ -238,7 +259,10 @@ let%test "Options (numeric)" =
   Options.set t Log_level max;
   r && max = Options.get t Log_level
 
+let () = eprintf "line %i\n" __LINE__
+
 let%test "Options (numeric)" =
+  Gc.full_major ();
   let t = Options.default () in
   let max = Options.max Log_level in
   try
@@ -246,52 +270,108 @@ let%test "Options (numeric)" =
     false
   with Invalid_argument _ -> true
 
+let () = eprintf "line %i\n" __LINE__
+
 let%test "Options (mode)" =
+  Gc.full_major ();
   let t = Options.default () in
+  Gc.full_major ();
   let d = Options.default_value Sat_solver in
+  Gc.full_major ();
   let r = d = Options.get t Sat_solver in
+  Gc.full_major ();
   let s : Options.sat_solver = if d = Cadical then Kissat else Cadical in
+  Gc.full_major ();
   Options.set t Sat_solver s;
+  Gc.full_major ();
   let n = Options.get t Sat_solver in
+  Gc.full_major ();
   r && d <> n && s = n
 
 let%expect_test "mk_bool_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter bool_sort;
   [%expect {| Bool |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "mk_bv_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter bv8_sort;
   [%expect {| (_ BitVec 8) |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "mk_fp_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter fp16_sort;
+  Gc.full_major ();
   [%expect {| (_ FloatingPoint 5 11) |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "mk_fun_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter fun1_1_1_sort;
   [%expect {| Bool Bool -> Bool |}]
 
+let () = eprintf "line %i\n" __LINE__
+
+let%expect_test "mk_fun_sort" =
+  Gc.full_major ();
+  Sort.pp Format.std_formatter fun1_1_1_sort;
+  [%expect {| Bool Bool -> Bool |}]
+
+let () = eprintf "line %i\n" __LINE__
+
+let%expect_test "mk_fun_sort" =
+  Gc.full_major ();
+  Sort.pp Format.std_formatter fun1_1_1_sort;
+  [%expect {| Bool Bool -> Bool |}]
+
+let () = eprintf "line %i\n" __LINE__
+
 let%test "mk_fun_sort" =
-  try
-    ignore (mk_fun_sort [||] bool_sort);
-    false
-  with Invalid_argument _ -> true
+  Gc.full_major ();
+  let result =
+  (try
+     ignore (mk_fun_sort [||] bool_sort);
+     false
+   with Invalid_argument _ -> true
+  )
+  in
+  Gc.full_major ();
+  result
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "mk_rm_sort" =
+  Gc.full_major ();
   Sort.pp Format.std_formatter rm_sort;
+  Gc.full_major ();
   [%expect {| RoundingMode |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "mk_uninterpreted_sort" =
   Sort.is_uninterpreted @@ mk_uninterpreted_sort ()
+
+let () = eprintf "line %i\n" __LINE__
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "mk_uninterpreted_sort" =
   Sort.pp Format.std_formatter uninterpreted_sort;
   [%expect {| T |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%expect_test "Sort.equal" =
   with_sorts_2 (fun s1 s2 -> print_predicate @@ Sort.equal s1 s2);
   [%expect
     {| 10000000 01000000 00100000 00010000 00001000 00000100 00000010 00000001 |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "Sort.compare" =
   with_sorts_2 (fun s1 s2 ->
@@ -299,9 +379,15 @@ let%expect_test "Sort.compare" =
   [%expect
     {| 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 |}]
 
+let () = eprintf "line %i\n" __LINE__
+
 let%test "Sort.hash" =
   with_sorts (fun s -> ignore (Sort.hash s));
   true
+
+let () = eprintf "line %i\n" __LINE__
+
+let () = eprintf "line %i\n" __LINE__
 
 let%test "Sort.bv_size" = Sort.bv_size bv8_sort = 8
 
@@ -365,6 +451,8 @@ let%expect_test "Sort.is_fun" =
 let%expect_test "Sort.is_rm" =
   with_sorts (fun s -> print_predicate @@ Sort.is_rm s);
   [%expect {| 00000010 |}]
+
+let () = eprintf "line %i\n" __LINE__
 
 let%expect_test "Sort.is_uninterpreted" =
   with_sorts (fun s -> print_predicate @@ Sort.is_uninterpreted s);
