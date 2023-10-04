@@ -1,4 +1,4 @@
-(data_only_dirs cadical symfpu bitwuzla)
+(data_only_dirs bitwuzla)
 
 (env
  (_
@@ -153,7 +153,7 @@
    type_manager
    logger
    statistics)
-  (include_dirs include src src/lib ../symfpu ../cadical)
+  (include_dirs include src src/lib ../../../build/include)
   (flags
    :standard
    -std=c++17
@@ -162,17 +162,6 @@
    -I..
    -DNDEBUG)
   (extra_deps ../.bitwuzla_tree)))
-
-(subdir
- cadical
- (include_subdirs unqualified)
- (dirs src)
- (foreign_library
-  (archive_name cadical)
-  (language cxx)
-  (names :standard \ mobical cadical)
-  (include_dirs src)
-  (flags :standard -std=c++11 -DNDEBUG -DNBUILD)))
 
 (rule
  (deps

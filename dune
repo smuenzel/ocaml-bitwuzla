@@ -2,6 +2,7 @@
  (public_name bitwuzla-cxx)
  (name bitwuzla_cxx)
  (modules options sort roundingMode kind term result solver bitwuzla_cxx)
+ (no_dynlink)
  (libraries zarith)
  (foreign_stubs
   (language cxx)
@@ -16,7 +17,7 @@
   vendor/bitwuzla/src/api/cpp/bitwuzla-api
   vendor/bitwuzla/bitwuzla
   vendor/bitwuzla/src/lib/bitwuzla-libs
-  vendor/cadical/cadical)
+  ../build/lib/cadical)
  (c_library_flags :standard -L/opt/homebrew/lib -lgmp)
  (library_flags -linkall))
 

@@ -18,7 +18,7 @@
   ../vendor/bitwuzla/src/api/cpp/bitwuzla-api
   ../vendor/bitwuzla/bitwuzla
   ../vendor/bitwuzla/src/lib/bitwuzla-libs
-  ../vendor/cadical/cadical)
+  ../../build/lib/cadical)
  (library_flags -linkall)
  (c_library_flags :standard -L/opt/homebrew/lib -lgmp))
 
@@ -38,7 +38,7 @@
   ../vendor/bitwuzla/src/api/cpp/bitwuzla-api
   ../vendor/bitwuzla/bitwuzla
   ../vendor/bitwuzla/src/lib/bitwuzla-libs
-  ../vendor/cadical/cadical)
+  ../../build/lib/cadical)
  (library_flags -linkall)
  (c_library_flags :standard -L/opt/homebrew/lib -lgmp))
 
@@ -58,7 +58,7 @@
   ../vendor/bitwuzla/src/api/cpp/bitwuzla-api
   ../vendor/bitwuzla/bitwuzla
   ../vendor/bitwuzla/src/lib/bitwuzla-libs
-  ../vendor/cadical/cadical)
+  ../../build/lib/cadical)
  (library_flags -linkall)
  (c_library_flags :standard -L/opt/homebrew/lib -lgmp))
 
@@ -78,6 +78,6 @@
   ../vendor/bitwuzla/src/api/cpp/bitwuzla-api
   ../vendor/bitwuzla/bitwuzla
   ../vendor/bitwuzla/src/lib/bitwuzla-libs
-  ../vendor/cadical/cadical)
+  ../../build/lib/cadical)
  (library_flags -linkall)
  (c_library_flags :standard -L/opt/homebrew/lib -lgmp))
