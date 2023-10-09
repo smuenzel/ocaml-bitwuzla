@@ -149,6 +149,20 @@ module Options : sig
 
             This is an expert option to configure the prop solver engine.
         *)
+    | Prop_opt_lt_concat_sext : bool key
+        (** Propagation-based local search solver engine:
+            Optimization for inverse value computation of inequalities over
+            concat and sign extension operands.**
+
+            When enabled, use optimized inverse value value computation for
+            inequalities over concats.
+
+            Values:
+            true: enable
+            false: disable [**default**]
+
+            This is an expert option to configure the prop solver engine.
+        *)
     | Prop_path_sel : prop_path_sel key
         (** Propagation-based local search solver engine:
             Path selection.
