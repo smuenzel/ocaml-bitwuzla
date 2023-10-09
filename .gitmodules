@@ -3,4 +3,4 @@
 	url = https://github.com/Boolector/btor2tools.git
 [submodule "vendor/bitwuzla"]
 	path = vendor/bitwuzla
-	url = https://github.com/bitwuzla/bitwuzla.git
+	url = git@github.com:smuenzel/bitwuzla
